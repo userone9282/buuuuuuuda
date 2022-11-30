@@ -1,1 +1,84 @@
 if you don't gerrit forget abourrr   it!!!
+library(readr)
+#import data sets
+# modify known variables as factors
+Risk_DATA <- read_csv("C:/Users/okiki/Desktop/exam/DATASET - DATASET.csv", 
+                      col_types = cols(ID = col_integer(), 
+                                       Age = col_integer(), Sex = col_factor(levels = c("male", 
+                                                                                        "female")), Job = col_integer()))
+View(Risk_DATA)
+
+#remove id column
+# ID column is redundant
+Risk_DATA <-Risk_DATA[-1]
+
+View(Risk_DATA)
+
+# change some of the variables to factors
+Risk_DATA$Housing <- factor(Risk_DATA$Housing)
+Risk_DATA$`Saving accounts` <- factor(Risk_DATA$`Saving accounts`)
+Risk_DATA$`Checking account` <- factor(Risk_DATA$`Checking account`)
+Risk_DATA$Purpose <- factor(Risk_DATA$Purpose)
+Risk_DATA$Risk <- factor(Risk_DATA$Risk)
+
+## QUESTION THREE
+
+### i) train a knn model and use the mini-max normalization(state any assumptions made when training)
+
+# get umeric data 
+norm_data <- Risk_DATA[,unlist(lapply(Risk_DATA, is.numeric))]
+
+# get factors data 
+factors_data <- Risk_DATA[,unlist(lapply(Risk_DATA, is.factor))]
+
+
+#Transformation-normalizing numeric data
+normalize <- function(x){return((x-min(x))/(max(x)-min(x)))}
+norm_data <- as.data.frame(lapply(norm_data,normalize))
+
+#join data sets again
+#bind normalized and factors DATASET
+DATASET <- cbind(norm_data,factors_data)
+
+#train_test split
+nrow(DATASET)
+# = 1000
+
+#70 - 30 split
+#Creating training and test datasets
+train_data <- DATASET[1:700,]
+test_data <- DATASET[701:1000,]
+
+
+#labels
+train_labels<- DATASET[1:700,10]
+test_labels<- DATASET[701:1000,10]
+
+#train model
+#Training a model on the data
+install.packages("class")
+library(class)
+predict_val<- knn(train = train_data,
+                  test = test_data, 
+                  cl= train_labels,k=3)
+
+
+### ii) evaluate model performance and give accuracy score of your model
+
+#Evaluating model performance
+install.packages("gmodels")
+
+library(gmodels)
+CrossTable(x= test_labels,y= predict_val,prop.chisq= FALSE )
+
+
+### iii) Test atleast 5 alternative values of k and draw a table based on your choice of k
+list_n = [2,4,13,15,17]
+
+for (i in range) {
+  predict_val<- knn(train = train_data,
+                    test = test_data, 
+                    cl= train_labels,
+                    k=list_n[i])
+  
+}
